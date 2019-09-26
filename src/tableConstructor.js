@@ -257,27 +257,38 @@ export class TableConstructor {
     if (!this._isToolbar(event.target)) {
       return;
     }
+    let coordPlusButton = getCoords(this._activatedToolBar._plusButton);
+    let coordMinusButton = getCoords(this._activatedToolBar._minusButton);
     let typeCoord;
-
-    if (this._activatedToolBar === this._horizontalToolBar) {
-      this._addRow();
-      typeCoord = 'y';
-    } else {
-      this._addColumn();
-      typeCoord = 'x';
-    }
     /** If event has transmitted data (coords of mouse) */
     const detailHasData = isNaN(event.detail) && event.detail !== null;
 
     if (detailHasData) {
+      if (this._activatedToolBar === this._horizontalToolBar) {
+        if(coordPlusButton.x1 <= event.detail.x && event.detail.x <= coordPlusButton.x2){
+          this._addRow();
+        }
+        if(coordMinusButton.x1 <= event.detail.x && event.detail.x <= coordMinusButton.x2){
+          this._removeRow();
+        }
+        typeCoord = 'y';
+      } else {
+        if(coordPlusButton.y1 <= event.detail.y && event.detail.y <= coordPlusButton.y2){
+          this._addColumn();
+        }
+        if(coordMinusButton.y1 <= event.detail.y && event.detail.y <= coordMinusButton.y2){
+          this._removeColumn();
+        }
+        typeCoord = 'x';
+      }
       const containerCoords = getCoords(this._table.htmlElement);
       let coord;
-
       if (typeCoord === 'x') {
         coord = event.detail.x - containerCoords.x1;
       } else {
         coord = event.detail.y - containerCoords.y1;
       }
+
       this._delayAddButtonForMultiClickingNearMouse(coord);
     } else {
       this._hideToolBar();
@@ -354,6 +365,23 @@ export class TableConstructor {
   }
 
   /**
+   * Adds row in table
+   * @private
+   */
+  _removeRow() {
+    const indicativeRow = this._hoveredCell.closest('TR');
+    let index = this._getHoveredSideOfContainer();
+
+    if (index === 1) {
+      index = indicativeRow.sectionRowIndex;
+      // if inserting after hovered cell
+      index = index + this._isBottomOrRight();
+    }
+
+    this._table.removeRow(index);
+  }
+
+  /**
    * @private
    *
    * Adds column in table
@@ -368,6 +396,23 @@ export class TableConstructor {
     }
 
     this._table.addColumn(index);
+  }
+
+  /**
+   * @private
+   *
+   * Adds column in table
+   */
+  _removeColumn() {
+    let index = this._getHoveredSideOfContainer();
+
+    if (index === 1) {
+      index = this._hoveredCell.cellIndex;
+      // if inserting after hovered cell
+      index = index + this._isBottomOrRight();
+    }
+
+    this._table.removeColumn(index);
   }
 
   /**

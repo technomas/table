@@ -1,5 +1,6 @@
 import './styles/border-toolbar.pcss';
 import svgPlusButton from './img/plus.svg';
+import svgMinusButton from './img/minus.svg';
 import {create} from './documentUtils';
 
 const CSS = {
@@ -10,8 +11,11 @@ const CSS = {
   verticalToolBar: 'tc-toolbar--ver',
   verticalHighlightingLine: 'tc-toolbar__shine-line--ver',
   plusButton: 'tc-toolbar__plus',
+  minusButton: 'tc-toolbar__minus',
   horizontalPlusButton: 'tc-toolbar__plus--hor',
   verticalPlusButton: 'tc-toolbar__plus--ver',
+  horizontalMinusButton: 'tc-toolbar__minus--hor',
+  verticalMinusButton: 'tc-toolbar__minus--ver',
   area: 'tc-table__area',
 };
 
@@ -24,8 +28,9 @@ class BorderToolBar {
    */
   constructor() {
     this._plusButton = this._generatePlusButton();
+    this._minusButton = this._generateMinusButton();
     this._highlightingLine = this._generateHighlightingLine();
-    this._toolbar = this._generateToolBar([this._plusButton, this._highlightingLine]);
+    this._toolbar = this._generateToolBar([this._plusButton, this._highlightingLine, this._minusButton]);
   }
 
   /**
@@ -74,6 +79,24 @@ class BorderToolBar {
     });
     return button;
   }
+
+  /**
+   * Generates a menu button to add rows and columns.
+   * @return {HTMLElement}
+   */
+  _generateMinusButton() {
+    const button = create('div', [CSS.minusButton]);
+
+    button.innerHTML = svgMinusButton;
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const e = new CustomEvent('click', {'detail': {'x': event.pageX, 'y': event.pageY}, 'bubbles': true});
+
+      this._toolbar.dispatchEvent(e);
+    });
+    return button;
+  }
+
 
   /**
    * @private
@@ -138,6 +161,7 @@ export class HorizontalBorderToolBar extends BorderToolBar {
 
     this._toolbar.classList.add(CSS.horizontalToolBar);
     this._plusButton.classList.add(CSS.horizontalPlusButton);
+    this._minusButton.classList.add(CSS.horizontalMinusButton);
     this._highlightingLine.classList.add(CSS.horizontalHighlightingLine);
   }
 
@@ -165,6 +189,7 @@ export class VerticalBorderToolBar extends BorderToolBar {
 
     this._toolbar.classList.add(CSS.verticalToolBar);
     this._plusButton.classList.add(CSS.verticalPlusButton);
+    this._minusButton.classList.add(CSS.verticalMinusButton);
     this._highlightingLine.classList.add(CSS.verticalHighlightingLine);
   }
 
