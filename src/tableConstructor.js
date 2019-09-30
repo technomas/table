@@ -369,14 +369,7 @@ export class TableConstructor {
    * @private
    */
   _removeRow() {
-    const indicativeRow = this._hoveredCell.closest('TR');
     let index = this._getHoveredSideOfContainer();
-
-    if (index === 1) {
-      index = indicativeRow.sectionRowIndex;
-      // if inserting after hovered cell
-      index = index + this._isBottomOrRight();
-    }
 
     this._table.removeRow(index);
   }
@@ -405,12 +398,6 @@ export class TableConstructor {
    */
   _removeColumn() {
     let index = this._getHoveredSideOfContainer();
-
-    if (index === 1) {
-      index = this._hoveredCell.cellIndex;
-      // if inserting after hovered cell
-      index = index + this._isBottomOrRight();
-    }
 
     this._table.removeColumn(index);
   }
